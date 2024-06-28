@@ -78,11 +78,5 @@ public interface IntegerList {
 
     Integer[] toIntegerArray();
 
-    void sort();
-
-    void sortBubble();
-
-    void sortSelection();
-
-    void sortInsertion();
+    void sort(int[] array);
 }
