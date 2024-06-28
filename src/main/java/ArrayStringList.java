@@ -3,12 +3,16 @@ import java.util.Arrays;
 public class ArrayStringList implements StringList {
     private final static int DEFAULT_CAPACITY = 16;
     private int size;
-    //    private int capacity;
     private String[] array;
 
     public ArrayStringList() {
         this.size = 0;
         this.array = new String[DEFAULT_CAPACITY];
+    }
+
+    public ArrayStringList(int capacity) {
+        this.size = 0;
+        this.array = new String[capacity];
     }
 
     private void checkSizeAndGrow() {
