@@ -4,6 +4,7 @@ public class ArrayIntegerList implements IntegerList {
     private final static int DEFAULT_CAPACITY = 16;
     private int size;
     private int[] array;
+    private int[] sortedArray;
     private boolean isSorted = false;
     public ArrayIntegerList() {
         this.size = 0;
@@ -15,9 +16,9 @@ public class ArrayIntegerList implements IntegerList {
         this.array = new int[capacity];
     }
 
-    private void checkSizeAndGrow() {
+    private void grow() {
         if (size >= array.length)
-            array = Arrays.copyOf(array, array.length * 2);
+            array = Arrays.copyOf(array, (int) (array.length * 1.5));
     }
 
     private void outOfBoundCheck(int index) {
@@ -26,31 +27,26 @@ public class ArrayIntegerList implements IntegerList {
         }
     }
 
-    private void popItem(int index) {
-        for (int i = index; i < size - 1; i++) {
-            array[i] = array[i + 1];
-        }
-        size--;
-    }
-
     @Override
     public Integer add(Integer item) {
-        checkSizeAndGrow();
+        grow();
         array[size++] = item;
         isSorted = false;
+        sortedArray = new int[0];
         return item;
     }
 
     @Override
     public Integer add(int index, Integer item) {
         outOfBoundCheck(index);
-        checkSizeAndGrow();
+        grow();
         size++;
         for (int i = size - 1; i > index; i--) {
             array[i] = array[i - 1];
         }
         array[index] = item;
         isSorted = false;
+        sortedArray = new int[0];
         return item;
     }
 
@@ -59,6 +55,7 @@ public class ArrayIntegerList implements IntegerList {
         outOfBoundCheck(index);
         array[index] = item;
         isSorted = false;
+        sortedArray = new int[0];
         return item;
     }
 
@@ -66,6 +63,8 @@ public class ArrayIntegerList implements IntegerList {
     public Integer removeInteger(Integer item) {
         for (int i = 0; i < size; i++) {
             if (item.equals(array[i])) {
+                isSorted = false;
+                sortedArray = new int[0];
                 return remove(i);
             }
         }
@@ -76,21 +75,27 @@ public class ArrayIntegerList implements IntegerList {
     public Integer remove(int index) {
         outOfBoundCheck(index);
         Integer item = array[index];
-        popItem(index);
+        for (int i = index; i < size - 1; i++) {
+            array[i] = array[i + 1];
+        }
+        size--;
+        isSorted = false;
+        sortedArray = new int[0];
         return item;
     }
 
     @Override
     public boolean contains(Integer item) {
         if (!isSorted){
-            sortInsertion();
+            sortedArray=toArray();
+            sort(sortedArray);
         }
-        return binarySearch(item);
+        return binarySearch(sortedArray, item);
     }
 
-    private boolean binarySearch(int item) {
+    private static boolean binarySearch(int[] array, int item) {
         int min = 0;
-        int max = size - 1;
+        int max = array.length - 1;
         while (min <= max) {
             int mid = (min + max) / 2;
             if (item == array[mid]) {
@@ -172,41 +177,38 @@ public class ArrayIntegerList implements IntegerList {
     }
 
     @Override
-    public void sort() {
-        sortInsertion();
+    public void sort(int[] array) {
+        sortMerge(array);
+        isSorted=true;
     }
 
-    @Override
-    public void sortBubble() {
-        for (int i = 0; i < size - 1; i++) {
-            for (int j = 0; j < size - 1 - i; j++) {
+    public static void sortBubble(int[] array) {
+        for (int i = 0; i < array.length - 1; i++) {
+            for (int j = 0; j < array.length - 1 - i; j++) {
                 if (array[j] > array[j + 1]) {
-                    swapElements(j, j + 1);
+                    swapElements(array, j, j + 1);
                 }
             }
         }
-        isSorted = true;
     }
 
-    @Override
-    public void sortSelection() {
+    public static void sortSelection(int[] array) {
 
-        for (int i = 0; i < size - 1; i++) {
+        for (int i = 0; i < array.length - 1; i++) {
             int minElementIndex = i;
-            for (int j = i + 1; j < size; j++) {
+            for (int j = i + 1; j < array.length; j++) {
                 if (array[j] < array[minElementIndex]) {
                     minElementIndex = j;
 
                 }
             }
-            swapElements(i, minElementIndex);
+            swapElements(array, i, minElementIndex);
         }
-        isSorted = true;
     }
 
-    @Override
-    public void sortInsertion() {
-        for (int i = 1; i < size; i++) {
+
+    public static void sortInsertion(int[] array) {
+        for (int i = 1; i < array.length; i++) {
             int temp = array[i];
             int j = i;
             while (j > 0 && array[j - 1] >= temp) {
@@ -215,12 +217,52 @@ public class ArrayIntegerList implements IntegerList {
             }
             array[j] = temp;
         }
-        isSorted = true;
     }
 
-    private void swapElements(int indexA, int indexB) {
+    private static void swapElements(int[] array, int indexA, int indexB) {
         int tmp = array[indexA];
         array[indexA] = array[indexB];
         array[indexB] = tmp;
+    }
+
+    public static void sortMerge(int[] arr) {
+        if (arr.length < 2) {
+            return;
+        }
+        int mid = arr.length / 2;
+        int[] left = new int[mid];
+        int[] right = new int[arr.length - mid];
+
+        for (int i = 0; i < left.length; i++) {
+            left[i] = arr[i];
+        }
+
+        for (int i = 0; i < right.length; i++) {
+            right[i] = arr[mid + i];
+        }
+
+        sortMerge(left);
+        sortMerge(right);
+
+        merge(arr, left, right);
+    }
+
+    public static void merge(int[] arr, int[] left, int[] right) {
+        int mainP = 0;
+        int leftP = 0;
+        int rightP = 0;
+        while (leftP < left.length && rightP < right.length) {
+            if (left[leftP] <= right[rightP]) {
+                arr[mainP++] = left[leftP++];
+            } else {
+                arr[mainP++] = right[rightP++];
+            }
+        }
+        while (leftP < left.length) {
+            arr[mainP++] = left[leftP++];
+        }
+        while (rightP < right.length) {
+            arr[mainP++] = right[rightP++];
+        }
     }
 }

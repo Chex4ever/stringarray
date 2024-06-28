@@ -201,36 +201,32 @@ class ArrayIntegerListTest {
     @Test
     void sortBubbleTest() {
         int[] expected = new int[]{1, 2, 3, 4, 5};
-        integerList.add(5);
-        integerList.add(1);
-        integerList.add(4);
-        integerList.add(2);
-        integerList.add(3);
-        integerList.sortBubble();
-        assertThat(integerList.toArray()).isEqualTo(expected);
+        int[] actual = new int[]{5, 1, 4, 2, 3};
+        ArrayIntegerList.sortBubble(actual);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     void sortSelectionTest() {
         int[] expected = new int[]{1, 2, 3, 4, 5};
-        integerList.add(5);
-        integerList.add(1);
-        integerList.add(4);
-        integerList.add(2);
-        integerList.add(3);
-        integerList.sortSelection();
-        assertThat(integerList.toArray()).isEqualTo(expected);
+        int[] actual = new int[]{5, 1, 4, 2, 3};
+        ArrayIntegerList.sortSelection(actual);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     void sortInsertionTest() {
         int[] expected = new int[]{1, 2, 3, 4, 5};
-        integerList.add(5);
-        integerList.add(1);
-        integerList.add(4);
-        integerList.add(2);
-        integerList.add(3);
-        integerList.sortInsertion();
-        assertThat(integerList.toArray()).isEqualTo(expected);
+        int[] actual = new int[]{5, 1, 4, 2, 3};
+        ArrayIntegerList.sortInsertion(actual);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    void sortMergeTest() {
+        int[] expected = new int[]{1, 2, 3, 4, 5};
+        int[] actual = new int[]{5, 1, 4, 2, 3};
+        ArrayIntegerList.sortMerge(actual);
+        assertThat(actual).isEqualTo(expected);
     }
 }
