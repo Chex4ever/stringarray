@@ -3,7 +3,6 @@ import java.util.Arrays;
 public class ArrayStringList implements StringList {
     private final static int DEFAULT_CAPACITY = 16;
     private int size;
-    //    private int capacity;
     private String[] array;
 
     public ArrayStringList() {
@@ -13,12 +12,22 @@ public class ArrayStringList implements StringList {
 
     private void checkSizeAndGrow() {
         if (size >= array.length)
-            array = Arrays.copyOf(array, array.length * 2);
+            array = Arrays.copyOf(array, (int) (array.length * 1.5));
     }
 
+    private void outOfBoundAddCheck(int index) {
+        if (index > size) {
+            throw new IllegalArgumentException("Индекс больше размера списка. Размер списка %d. Запрошенный индекс %d".formatted(size, index));
+        }
+    }
     private void outOfBoundCheck(int index) {
         if (index >= size) {
             throw new IllegalArgumentException("Индекс больше размера списка. Размер списка %d. Запрошенный индекс %d".formatted(size, index));
+        }
+    }
+    private void checkIsNull(String item) {
+        if (item.isEmpty()) {
+            throw new NullPointerException();
         }
     }
 
@@ -31,6 +40,7 @@ public class ArrayStringList implements StringList {
 
     @Override
     public String add(String item) {
+        checkIsNull(item);
         checkSizeAndGrow();
         array[size++] = item;
         return item;
@@ -38,7 +48,8 @@ public class ArrayStringList implements StringList {
 
     @Override
     public String add(int index, String item) {
-        outOfBoundCheck(index);
+        checkIsNull(item);
+        outOfBoundAddCheck(index);
         checkSizeAndGrow();
         size++;
         for (int i = size - 1; i > index; i--) {

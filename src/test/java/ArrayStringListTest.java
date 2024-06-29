@@ -27,7 +27,10 @@ class ArrayStringListTest {
         assertThat(stringList.size()).isEqualTo(2);
         assertThat(stringList.get(1)).isEqualTo(string2);
     }
-
+    @Test
+    void addNullTest() {
+        assertThatExceptionOfType(NullPointerException.class).isThrownBy(() -> stringList.add(null));
+    }
     @Test
     void insertTest() {
         stringList.add(string1);
